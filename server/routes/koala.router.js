@@ -5,7 +5,7 @@ const koalaRouter = express.Router();
 const pool = require( '../routes/pool' );
 
 // GET
-router.get( '/', ( req, res )=>{
+koalaRouter.get( '/', ( req, res )=>{
     console.log( 'in /koala GET' );
     // test query
     const queryString = `SELECT * FROM koala`;
@@ -18,10 +18,9 @@ router.get( '/', ( req, res )=>{
 })
 
 // POST
-router.post( '/', ( req, res )=>{
+koalaRouter.post( '/', ( req, res )=>{
     console.log( 'in koala POST:', req.body );
-    /// - replace array push with db table INSERT
-    const queryString = `INSERT INTO koala ( name, gender, age, ready_to_transfer, notes ) VALUES ( 'Valentine', 'M', '38','N', 'Likes tacos' );`;
+    const queryString = `INSERT INTO koala ( name, gender, age, ready_to_transfer, notes ) VALUES ( $1, $2, $3, $4, $5 );`;
     const values = [ req.body.name, req.body.gender, req.body.age, req.body.ready_to_transfer, req.body.notes  ];
     pool.query( queryString, values ).then( ( result )=>{
         res.sendStatus( 201 ); // 201 = CREATED

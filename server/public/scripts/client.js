@@ -7,23 +7,6 @@ $( document ).ready( function(){
 
 }); // end doc ready
 
-function setupClickListeners() {
-  $( '#addButton' ).on( 'click', function(){
-    console.log( 'in addButton on click' );
-    // get user input and put in an object
-    // NOT WORKING YET :(
-    // using a test object
-    let koalaToSend = {
-      name: 'testName',
-      age: 'testName',
-      gender: 'testName',
-      readyForTransfer: 'testName',
-      notes: 'testName',
-    };
-    // call saveKoala with the new obejct
-    saveKoala( koalaToSend );
-  }); 
-}
 
 function getKoalas(){
   console.log( 'in getKoalas' );
@@ -38,7 +21,7 @@ function getKoalas(){
     // loop through response
     for( let i=0; i< response.length; i++){
         // append each item to DOM
-        el.append( `<li>${ response[i].name }, ${ response[i].age }, ${ response[i].gender } , ${ response[i].readyForTransfer }, ${ response[i].notes }</li>` );
+        el.append( `<tr><td>${ response[i].name }</td> <td>${ response[i].age }</td> <td>${ response[i].gender }</td>  <td>${ response[i].ready_to_transfer }</td> <td>${ response[i].notes }</td></tr>` );
     }
 }).catch( function( err ){
     console.log( err );
@@ -48,8 +31,30 @@ function getKoalas(){
   
 } // end getKoalas
 
-function saveKoala( newKoala ){
-  console.log( 'in saveKoala', newKoala );
+function saveKoala(){
+  console.log( 'in saveKoala');
   // ajax call to server to get koalas
+  let koalaToSend = {
+      name: $('#nameIn').val(),
+      age: $('#ageIn').val(),
+      gender: $('#genderIn').val(),
+      readyForTransfer: $('#readyForTransferIn').val(),
+      notes: $('#notesIn').val()
+};
+console.log( 'sending:', koalaToSend );
+// send new item obj to server via POST
+$.ajax({
+    method: 'POST',
+    url: '/koala',
+    data: koalaToSend
+}).then( function( response ){
+    console.log( 'back from POST:', response );
+    // if successful, update DOM
+    getKoalas();
+}).catch( function( err ){
+    // if not, alert user
+    console.log( err );
+    alert( 'error adding item. see console for details' );
+}) // end AJAX
  
 }
