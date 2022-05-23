@@ -3,6 +3,9 @@ console.log( 'js' );
 $( document ).ready( function(){
   console.log( 'JQ' );
   $( '#addButton' ).on( 'click', saveKoala );
+  $( '#viewKoalas').on( 'click', '.readyButton', updateKoala );
+  $( '#viewKoalas').on( 'click', '.sellButton', transferKoala );
+
   getKoalas();
 
 }); // end doc ready
@@ -20,9 +23,16 @@ function getKoalas(){
     el.empty();
     // loop through response
     for( let i=0; i< response.length; i++){
+        if(response[i].ready_to_transfer === false ){
         // append each item to DOM
-        el.append( `<tr><td>${ response[i].name }</td> <td>${ response[i].age }</td> <td>${ response[i].gender }</td>  <td>${ response[i].ready_to_transfer }</td> <td>${ response[i].notes }</td></tr>` );
-    }
+        el.append( `<tr><td>${ response[i].name }</td> <td>${ response[i].age }</td> <td>${ response[i].gender }</td>  
+        <td>${ response[i].ready_to_transfer }</td><td>${ response[i].notes }</td><td><button class="readyButton" data-id="${ response[i].id }">Ready for Transfer</button></td></tr>` );
+        }
+        else{
+            el.append( `<tr><td>${ response[i].name }</td> <td>${ response[i].age }</td> <td>${ response[i].gender }</td>  
+        <td>${ response[i].ready_to_transfer }</td><td>${ response[i].notes }</td><td><button class="sellButton" data-id="${ response[i].id }">Transfer</button></td></tr>` );
+        }
+    }   
 }).catch( function( err ){
     console.log( err );
     // alert the user of error
@@ -57,4 +67,32 @@ $.ajax({
     alert( 'error adding item. see console for details' );
 }) // end AJAX
  
-}
+}// end saveKoala
+
+//update koalas
+function updateKoala(){
+    console.log('in updateKoala', $( this ).data('id') );
+    $.ajax({
+        method: 'PUT',
+        url: '/koala?id=' + $( this ).data( 'id' )
+    }).then( function( response ){
+        console.log( response );
+        getKoalas();
+    }).catch( function( err ){
+        alert('erorr completing PUT');
+    })
+}// end updateKoala
+
+function transferKoala(){
+    console.log( 'in transferKoala')
+    $.ajax({
+        method: 'DELETE',
+    url: `/koala?id=${ $( this ).data( 'id' )}`
+    }).then( function( response ){
+        console.log( response );
+        getKoalas();
+    }).catch( function( err ){
+        console.log( err );
+        alert( 'error transfering koala');
+    })
+}// end transferKoala
